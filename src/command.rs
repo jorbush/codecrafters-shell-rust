@@ -29,7 +29,7 @@ impl Command {
                 let command = Command::from_str(params);
                 match command {
                     Some(command) => println!("{} is a shell builtin", command.to_string()),
-                    None => println!("{}: command not found", params),
+                    None => println!("{}: not found", params),
                 }
             }
             Command::Echo => println!("{}", params),
