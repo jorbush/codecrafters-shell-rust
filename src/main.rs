@@ -1,8 +1,11 @@
 #[allow(unused_imports)]
 use std::io::{self, Write};
 mod command;
+mod utils;
 
 use command::Command;
+
+use crate::utils::is_executable;
 
 fn main() {
     // REPL
@@ -26,7 +29,16 @@ fn main() {
                 command.execute(params);
                 continue;
             }
-            None => println!("{}: command not found", input),
+            None => match is_executable(command) {
+                true => {
+                    std::process::Command::new(command)
+                        .args(params.split_whitespace())
+                        .spawn()
+                        .expect("Failed to execute command");
+                    continue;
+                }
+                false => println!("{}: not found", command),
+            },
         }
     }
 }

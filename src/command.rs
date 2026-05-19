@@ -1,4 +1,4 @@
-use std::os::unix::fs::PermissionsExt;
+use crate::utils::is_executable;
 
 #[derive(Debug, PartialEq)]
 pub enum Command {
@@ -33,15 +33,7 @@ impl Command {
                     let path = std::env::var("PATH").unwrap_or_default();
                     let directories: Vec<&str> = path.split(':').collect();
                     for dir in directories {
-                        // check exists and is executable
-                        if std::path::Path::new(&format!("{}/{}", dir, params)).exists()
-                            && std::fs::metadata(format!("{}/{}", dir, params))
-                                .unwrap()
-                                .permissions()
-                                .mode()
-                                & 0o111
-                                != 0
-                        {
+                        if is_executable(&format!("{}/{}", dir, params)) {
                             println!("{} is {}/{}", params, dir, params);
                             return;
                         }
@@ -99,6 +91,14 @@ mod tests {
     fn test_execute_type_not_found() {
         let command = Command::Type;
         let params = "invalid";
+        command.execute(params);
+        // todo: assert that the output is correct
+    }
+
+    #[test]
+    fn test_execute_type_local_executable_files() {
+        let command = Command::Type;
+        let params = "ls";
         command.execute(params);
         // todo: assert that the output is correct
     }
