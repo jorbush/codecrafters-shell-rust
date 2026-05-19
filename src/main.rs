@@ -5,7 +5,7 @@ mod utils;
 
 use command::Command;
 
-use crate::utils::is_executable;
+use crate::utils::{find_exec_dir, is_executable};
 
 fn main() {
     // REPL
@@ -27,16 +27,17 @@ fn main() {
         match Command::from_str(command) {
             Some(command) => {
                 command.execute(params);
+                continue;
             }
-            None => match is_executable(command) {
-                true => {
-                    println!(
-                        "Program was passed with {} args (including program name).",
-                        input.split_whitespace().count()
-                    );
+            None => match find_exec_dir(command) {
+                Some(dir) => {
+                    std::process::Command::new(command)
+                        .args(params.split_whitespace())
+                        .spawn()
+                        .expect("Failed to execute command");
                     continue;
                 }
-                false => println!("{}: not found", command),
+                None => println!("{}: not found", command),
             },
         }
     }

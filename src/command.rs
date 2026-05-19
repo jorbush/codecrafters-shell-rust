@@ -1,4 +1,4 @@
-use crate::utils::is_executable;
+use crate::utils::{find_exec_dir, is_executable};
 
 #[derive(Debug, PartialEq)]
 pub enum Command {
@@ -29,17 +29,10 @@ impl Command {
         match self {
             Command::Type => match Command::from_str(params) {
                 Some(command) => println!("{} is a shell builtin", command.to_string()),
-                None => {
-                    let path = std::env::var("PATH").unwrap_or_default();
-                    let directories: Vec<&str> = path.split(':').collect();
-                    for dir in directories {
-                        if is_executable(&format!("{}/{}", dir, params)) {
-                            println!("{} is {}/{}", params, dir, params);
-                            return;
-                        }
-                    }
-                    println!("{}: not found", params);
-                }
+                None => match find_exec_dir(params) {
+                    Some(dir) => println!("{} is {}", params, dir),
+                    None => println!("{}: not found", params),
+                },
             },
             Command::Echo => println!("{}", params),
             Command::Exit => std::process::exit(0),
