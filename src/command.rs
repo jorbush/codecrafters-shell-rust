@@ -42,7 +42,7 @@ impl Command {
                                 & 0o111
                                 != 0
                         {
-                            println!("{} is {}", params, dir);
+                            println!("{} is {}/{}", params, dir, params);
                             return;
                         }
                     }
