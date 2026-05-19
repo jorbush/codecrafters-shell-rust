@@ -5,7 +5,7 @@ mod utils;
 
 use command::Command;
 
-use crate::utils::{find_exec_dir, is_executable};
+use crate::utils::find_exec_dir;
 
 fn main() {
     // REPL
@@ -30,7 +30,7 @@ fn main() {
                 continue;
             }
             None => match find_exec_dir(command) {
-                Some(dir) => {
+                Some(_) => {
                     std::process::Command::new(command)
                         .args(params.split_whitespace())
                         .spawn()
