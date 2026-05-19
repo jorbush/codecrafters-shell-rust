@@ -27,14 +27,13 @@ fn main() {
         match Command::from_str(command) {
             Some(command) => {
                 command.execute(params);
-                continue;
             }
             None => match is_executable(command) {
                 true => {
-                    std::process::Command::new(command)
-                        .args(params.split_whitespace())
-                        .spawn()
-                        .expect("Failed to execute command");
+                    println!(
+                        "Program was passed with {} args (including program name).",
+                        input.split_whitespace().count()
+                    );
                     continue;
                 }
                 false => println!("{}: not found", command),
