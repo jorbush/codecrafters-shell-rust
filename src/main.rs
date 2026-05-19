@@ -34,7 +34,9 @@ fn main() {
                     std::process::Command::new(command)
                         .args(params.split_whitespace())
                         .spawn()
-                        .expect("Failed to execute command");
+                        .expect("Failed to execute command")
+                        .wait()
+                        .expect("Failed to wait for command");
                     continue;
                 }
                 None => println!("{}: not found", command),
