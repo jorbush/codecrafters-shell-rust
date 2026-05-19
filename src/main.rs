@@ -35,7 +35,6 @@ fn main() {
                         .args(params.split_whitespace())
                         .spawn()
                         .expect("Failed to execute command");
-                    println!();
                     continue;
                 }
                 None => println!("{}: not found", command),
