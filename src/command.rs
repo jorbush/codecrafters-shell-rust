@@ -2,6 +2,7 @@ use crate::utils::find_exec_dir;
 
 #[derive(Debug, PartialEq)]
 pub enum Command {
+    Cd,
     Pwd,
     Type,
     Echo,
@@ -11,6 +12,7 @@ pub enum Command {
 impl Command {
     pub fn from_str(s: &str) -> Option<Command> {
         match s {
+            "cd" => Some(Command::Cd),
             "pwd" => Some(Command::Pwd),
             "type" => Some(Command::Type),
             "echo" => Some(Command::Echo),
@@ -21,6 +23,7 @@ impl Command {
 
     fn to_string(&self) -> &str {
         match self {
+            Command::Cd => "cd",
             Command::Pwd => "pwd",
             Command::Type => "type",
             Command::Echo => "echo",
@@ -30,6 +33,20 @@ impl Command {
 
     pub fn execute(&self, params: &str) {
         match self {
+            Command::Cd => {
+                let path = params.trim();
+                if path.is_empty() {
+                    std::env::set_current_dir(std::env::home_dir().unwrap()).unwrap();
+                } else {
+                    if path.split_ascii_whitespace().count() > 1 {
+                        println!("cd: too many arguments");
+                        return;
+                    }
+                    std::env::set_current_dir(path).unwrap_or_else(|_| {
+                        println!("cd: {}: No such file or directory", path);
+                    });
+                }
+            }
             Command::Pwd => println!("{}", std::env::current_dir().unwrap().display()),
             Command::Type => match Command::from_str(params) {
                 Some(command) => println!("{} is a shell builtin", command.to_string()),
