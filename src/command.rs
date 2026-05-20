@@ -1,7 +1,8 @@
-use crate::utils::{find_exec_dir, is_executable};
+use crate::utils::find_exec_dir;
 
 #[derive(Debug, PartialEq)]
 pub enum Command {
+    Pwd,
     Type,
     Echo,
     Exit,
@@ -10,6 +11,7 @@ pub enum Command {
 impl Command {
     pub fn from_str(s: &str) -> Option<Command> {
         match s {
+            "pwd" => Some(Command::Pwd),
             "type" => Some(Command::Type),
             "echo" => Some(Command::Echo),
             "exit" => Some(Command::Exit),
@@ -19,6 +21,7 @@ impl Command {
 
     fn to_string(&self) -> &str {
         match self {
+            Command::Pwd => "pwd",
             Command::Type => "type",
             Command::Echo => "echo",
             Command::Exit => "exit",
@@ -27,6 +30,7 @@ impl Command {
 
     pub fn execute(&self, params: &str) {
         match self {
+            Command::Pwd => println!("{}", std::env::current_dir().unwrap().display()),
             Command::Type => match Command::from_str(params) {
                 Some(command) => println!("{} is a shell builtin", command.to_string()),
                 None => match find_exec_dir(params) {
