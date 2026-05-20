@@ -35,7 +35,7 @@ impl Command {
         match self {
             Command::Cd => {
                 let path = params.trim();
-                if path.is_empty() {
+                if path.is_empty() || path == "~" {
                     std::env::set_current_dir(std::env::home_dir().unwrap()).unwrap();
                 } else {
                     if path.split_ascii_whitespace().count() > 1 {
